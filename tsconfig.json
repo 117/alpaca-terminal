@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "skipLibCheck": true,
+      "target": "esnext",
+      "module": "esnext",
+      "outDir": "dist",
+      "moduleResolution": "node",
+      "lib": ["esnext", "es6"],
+      "declaration": false,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "strict": true,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "noImplicitReturns": true,
+    }
+  }
+  

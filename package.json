@@ -1,0 +1,25 @@
+{
+  "name": "alpaca-terminal",
+  "version": "0.1.1",
+  "description": "a command line terminal for trading with the Alpaca API",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/117/alpaca-terminal.git"
+  },
+  "author": "117",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/117/alpaca-terminal/issues"
+  },
+  "homepage": "https://github.com/117/alpaca-terminal#readme",
+  "dependencies": {
+    "chalk": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.12"
+  }
+}
