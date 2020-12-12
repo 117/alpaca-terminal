@@ -157,8 +157,8 @@ quit                                                          close the terminal
                 console.log('no positions found');
                 return;
             }
+            console.log('symbol'.padEnd(8), 'side'.padEnd(6), 'qty'.padEnd(8), 'price'.padEnd(8), 'status'.padEnd(12), 'id'.padEnd(36));
             orders.forEach((order) => {
-                console.log('symbol'.padEnd(8), 'side'.padEnd(6), 'qty'.padEnd(8), 'price'.padEnd(8), 'status'.padEnd(12), 'id'.padEnd(36));
                 console.log(order.symbol.padEnd(8), order.side.padEnd(6), order.qty.toString().padEnd(8), (order.filled_avg_price
                     ? order.filled_avg_price.toString()
                     : '-').padEnd(8), order.status.padEnd(12), order.id.padEnd(36));

@@ -194,16 +194,16 @@ quit                                                          close the terminal
           return
         }
 
-        orders.forEach((order) => {
-          console.log(
-            'symbol'.padEnd(8),
-            'side'.padEnd(6),
-            'qty'.padEnd(8),
-            'price'.padEnd(8),
-            'status'.padEnd(12),
-            'id'.padEnd(36),
-          )
+        console.log(
+          'symbol'.padEnd(8),
+          'side'.padEnd(6),
+          'qty'.padEnd(8),
+          'price'.padEnd(8),
+          'status'.padEnd(12),
+          'id'.padEnd(36),
+        )
 
+        orders.forEach((order) => {
           console.log(
             order.symbol.padEnd(8),
             order.side.padEnd(6),
