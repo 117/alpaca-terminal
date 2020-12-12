@@ -1,4 +1,4 @@
-import { AlpacaTerminal } from './alpaca_terminal.js'
+import { Terminal } from './terminal.js'
 
 // forever
-new AlpacaTerminal().loop()
+new Terminal().loop()

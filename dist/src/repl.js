@@ -1,5 +1,4 @@
 import readline from 'readline';
-import messages from './messages.js';
 export class REPL {
     constructor(parameters) {
         this.parameters = parameters;
@@ -18,14 +17,14 @@ export class REPL {
                 let args = input.split(' '), label = args[0].toLowerCase();
                 if (label in this) {
                     // @ts-ignore
-                    await this[label](...args.slice(1)).catch((exception) => console.log(messages.ERROR_PREFIX, exception));
+                    await this[label](...args.slice(1)).catch((error) => console.log(error));
                 }
                 else {
-                    console.log(messages.ERROR_PREFIX, messages.ERROR_COMMAND_NOT_FOUND);
+                    console.log(`command not found`);
                 }
             }
-            catch (exception) {
-                console.log(messages.ERROR_PREFIX, exception);
+            catch (error) {
+                console.log(error);
             }
             finally {
                 this.loop();

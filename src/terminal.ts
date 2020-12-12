@@ -8,9 +8,7 @@ import { AlpacaClient } from '@master-chief/alpaca'
 import { OrderSide } from '@master-chief/alpaca/types/entities'
 import { default as Decimal } from 'decimal.js'
 
-import messages from './messages.js'
-
-export class AlpacaTerminal extends REPL {
+export class Terminal extends REPL {
   private client: AlpacaClient | undefined
 
   constructor() {
@@ -26,18 +24,18 @@ authenticate   <key_id> <secret>                              authenticate with 
 account        [field]                                        view account
 order          <side> <symbol> <amount> [tif] [limit_price]   buy a stock
 close          <symbol|all|*>                                 close one or many positions
-cancel         <order_id|all|*>                               cancel one or many orders
+cancel         <symbol|order_id|all|*>                        cancel one or many orders
 orders         [status]                                       view recent orders
 positions                                                     view positions
 quit                                                          close the terminal`
       .split('\n')
-      .forEach((line) => console.log(messages.INFO_PREFIX, line))
+      .forEach((line) => console.log(line))
   }
 
   async authenticate(...args: Array<string>) {
     // make sure minimum arg length is met
     if (args.length < 2) {
-      throw messages.ERROR_NOT_ENOUGH_ARGS
+      throw 'not enough args'
     }
 
     let newClient = new AlpacaClient({
@@ -54,13 +52,18 @@ quit                                                          close the terminal
     }
 
     this.client = newClient
-    console.log(messages.SUCCESS_PREFIX, 'you may now trade')
+
+    console.log(
+      `using account with number ${
+        (await this.client.getAccount()).account_number
+      }`,
+    )
   }
 
   async account(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
 
     // fetch the account
@@ -71,13 +74,13 @@ quit                                                          close the terminal
         throw `field "${args[0]}" not present in account`
       }
 
-      console.log(messages.INFO_PREFIX, (account as any)[args[0]])
+      console.log((account as any)[args[0]])
       return
     }
 
     for (let [key, value] of Object.entries(account)) {
       if (!_.isFunction(value)) {
-        console.log(messages.INFO_PREFIX, key.padEnd(24), value)
+        console.log(key.padEnd(24), value)
       }
     }
   }
@@ -85,12 +88,12 @@ quit                                                          close the terminal
   async order(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
 
     // make sure minimum arg length is met
     if (args.length < 3) {
-      throw messages.ERROR_NOT_ENOUGH_ARGS
+      throw 'not enough args'
     }
 
     // determine the side
@@ -143,12 +146,7 @@ quit                                                          close the terminal
         type: 'market',
         time_in_force: 'day',
       })
-      .then((order) =>
-        console.log(
-          messages.SUCCESS_PREFIX,
-          `order placed with ID ${order.id}`,
-        ),
-      )
+      .then((order) => console.log(`order placed with ID ${order.id}`))
       .catch((error) => {
         throw error.message
       })
@@ -157,7 +155,7 @@ quit                                                          close the terminal
   async orders(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
 
     // fetch the orders
@@ -169,7 +167,6 @@ quit                                                          close the terminal
       .then((orders) => {
         orders.forEach((order) =>
           console.log(
-            messages.INFO_PREFIX,
             order.symbol.padEnd(8),
             order.side.padEnd(6),
             order.qty.toString().padEnd(8),
@@ -189,65 +186,62 @@ quit                                                          close the terminal
   async cancel(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
 
     // make sure minimum arg length is met
     if (args.length < 1) {
-      throw messages.ERROR_NOT_ENOUGH_ARGS
+      throw 'not enough args'
     }
 
-    // check if a wildcard was provided
-    if (args[0] == '*' || args[0].toLowerCase() == 'all') {
-      await this.client
-        .cancelOrders()
-        .then((orders) =>
-          console.log(
-            messages.SUCCESS_PREFIX,
-            `${orders.length} order(s) canceled`,
-          ),
-        )
-        .catch((error) => {
-          throw error.message
-        })
-      return
+    let orders = await this.client.getOrders(),
+      found =
+        args[0] == '*' || args[0].toLowerCase() == 'all'
+          ? orders
+          : orders.filter(
+              (order) =>
+                order.id == args[0] || order.symbol == args[0].toUpperCase(),
+            )
+
+    if (_.isEmpty(found)) {
+      console.log(`no orders found for "${args[0]}"`)
     }
 
-    // cancel a specific order id
-    await this.client
-      .cancelOrder({
-        order_id: args[0],
-      })
-      .then(() =>
-        console.log(
-          messages.SUCCESS_PREFIX,
-          `order cancelled with ID ${args[0]}`,
-        ),
-      )
-      .catch((error) => {
-        throw error.message
-      })
+    await Promise.allSettled(
+      found.map(
+        async (order) =>
+          // @ts-ignore
+          await this.client
+            .cancelOrder({
+              order_id: order.id,
+            })
+            .then(() => console.log(`order cancelled with ID ${order.id}`))
+            .catch((error) => {
+              throw error.message
+            }),
+        this,
+      ),
+    )
   }
 
   async positions() {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
-
-    console.log(
-      messages.INFO_PREFIX,
-      'symbol'.padEnd(8),
-      'price'.padEnd(8),
-      'qty'.padEnd(8),
-      'market_value'.padEnd(14),
-      'pnl'.padEnd(8),
-    )
 
     // fetch the positions
     await this.client
       .getPositions()
-      .then((positions) =>
+      .then((positions) => {
+        console.log(
+          'symbol'.padEnd(8),
+          'price'.padEnd(8),
+          'qty'.padEnd(8),
+          'market_value'.padEnd(14),
+          'pnl'.padEnd(8),
+        )
+
         positions
           .concat({
             symbol: 'ACB',
@@ -258,7 +252,6 @@ quit                                                          close the terminal
           } as any)
           .forEach((position) =>
             console.log(
-              messages.INFO_PREFIX,
               position.symbol.padEnd(8),
               `$${position.current_price.toLocaleString()}`.padEnd(8),
               position.qty.toLocaleString().padEnd(8),
@@ -269,8 +262,8 @@ quit                                                          close the terminal
                   : chalk.red(`-$${position.unrealized_pl.toLocaleString()}`)
               }`,
             ),
-          ),
-      )
+          )
+      })
       .catch((error) => {
         throw error.message
       })
@@ -279,24 +272,19 @@ quit                                                          close the terminal
   async close(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
-      throw messages.ERROR_NOT_AUTHENTICATED
+      throw 'not authenticated'
     }
 
     // make sure minimum arg length is met
     if (args.length < 3) {
-      throw messages.ERROR_NOT_ENOUGH_ARGS
+      throw 'not enough args'
     }
 
     // check if a wildcard was provided
     if (args[0] == '*' || args[0].toLowerCase() == 'all') {
       await this.client
         .closePositions()
-        .then((orders) =>
-          console.log(
-            messages.SUCCESS_PREFIX,
-            `${orders.length} position(s) closed`,
-          ),
-        )
+        .then((orders) => console.log(`${orders.length} position(s) closed`))
         .catch((error) => {
           throw error.message
         })
@@ -309,10 +297,7 @@ quit                                                          close the terminal
         symbol: args[0].toUpperCase(),
       })
       .then((order) =>
-        console.log(
-          messages.SUCCESS_PREFIX,
-          `position on ${order.symbol} has been closed`,
-        ),
+        console.log(`position on ${order.symbol} has been closed`),
       )
       .catch((error) => {
         throw error.message
@@ -320,7 +305,7 @@ quit                                                          close the terminal
   }
 
   async quit() {
-    console.log(messages.INFO_PREFIX, 'goodbye')
+    console.log('goodbye')
     process.exit()
   }
 }
