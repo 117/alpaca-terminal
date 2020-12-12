@@ -7,7 +7,7 @@ export default {
     description: 'authenticate with alpaca',
     execute: async (args) => {
         if (args.length < 2) {
-            throw new Error('not enough arguments');
+            throw new Error('not enough args');
         }
         let _ = new AlpacaClient({
             credentials: {
@@ -17,10 +17,10 @@ export default {
             rate_limit: true,
         });
         if (!(await _.isAuthenticated())) {
-            throw new Error('failed to authenticate with alpaca');
+            throw new Error('failed authentication');
         }
         client = _;
-        console.log(`${chalk.green('success!')} authenticated with alpaca`);
+        console.log(chalk.green('success!'), 'you can now trade');
         return;
     },
 };
