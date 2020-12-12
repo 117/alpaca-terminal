@@ -7,5 +7,5 @@ export default {
     execute: async () => commands.forEach((command) => console.log(`${chalk
         .yellowBright(command.aliases[1])
         .concat(command.aliases[0].slice(command.aliases[1].length))
-        .padEnd(24)} ${chalk.gray(command.usage.padEnd(38))} ${command.desc}`)),
+        .padEnd(24)} ${command.usage.padEnd(38)} ${command.desc}`)),
 };
