@@ -1,5 +1,5 @@
 import readline from 'readline';
-import { messages } from './main.js';
+import messages from './messages.js';
 export class REPL {
     constructor(parameters) {
         this.parameters = parameters;

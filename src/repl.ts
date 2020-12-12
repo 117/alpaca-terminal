@@ -1,6 +1,6 @@
 import readline from 'readline'
 
-import { messages } from './main.js'
+import messages from './messages.js'
 
 export class REPL {
   private interface = readline.createInterface({
