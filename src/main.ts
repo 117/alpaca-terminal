@@ -11,6 +11,8 @@ import orders from './orders.js'
 import positions from './positions.js'
 import exit from './exit.js'
 
+import { AlpacaClient } from '@master-chief/alpaca'
+
 export const repl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -18,7 +20,7 @@ export const repl = readline.createInterface({
   commands: Array<{
     aliases: string[]
     usage: string
-    desc: string
+    description: string
     execute: (args: string[]) => Promise<void>
   }> = Array.of(
     help,
@@ -32,7 +34,9 @@ export const repl = readline.createInterface({
     exit,
   )
 
-async function waitForInput() {
+export var client: AlpacaClient
+
+async function next() {
   repl.question('> ', async (input) => {
     try {
       let args = input.toLowerCase().split(' '),
@@ -44,7 +48,7 @@ async function waitForInput() {
         console.log('command not found')
       }
     } finally {
-      waitForInput()
+      next()
     }
   })
 }
@@ -52,4 +56,4 @@ async function waitForInput() {
 console.log(`${chalk.yellowBright(pkg.name)} ${pkg.version}`)
 console.log("Type 'help' or 'h' to list commands.")
 
-waitForInput()
+next()

@@ -1,6 +1,6 @@
 export default {
   aliases: ['positions', 'p'],
   usage: '',
-  desc: 'view positions',
+  description: 'view positions',
   execute: async (args: string[]) => {},
 }

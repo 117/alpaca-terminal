@@ -16,7 +16,8 @@ export const repl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 }), commands = Array.of(help, authenticate, account, buy, sell, close, orders, positions, exit);
-async function waitForInput() {
+export var client;
+async function next() {
     repl.question('> ', async (input) => {
         try {
             let args = input.toLowerCase().split(' '), command = commands.find((command) => command.aliases.includes(args[0]));
@@ -28,10 +29,10 @@ async function waitForInput() {
             }
         }
         finally {
-            waitForInput();
+            next();
         }
     });
 }
 console.log(`${chalk.yellowBright(pkg.name)} ${pkg.version}`);
 console.log("Type 'help' or 'h' to list commands.");
-waitForInput();
+next();

@@ -1,10 +1,11 @@
 {
   "name": "alpaca-terminal",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "description": "a command line terminal for trading with the Alpaca API",
   "type": "module",
   "bin": {
-    "alpaca-terminal": "dist/src/main.js"
+    "alpaca-terminal": "dist/src/main.js",
+    "alpaca": "dist/src/main.js"
   },
   "scripts": {
     "build": "npm run clean && tsc && ./shebang.sh",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/117/alpaca-terminal#readme",
   "dependencies": {
+    "@master-chief/alpaca": "^3.4.0",
     "chalk": "^4.1.0"
   },
   "devDependencies": {
