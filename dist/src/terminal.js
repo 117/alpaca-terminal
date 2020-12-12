@@ -107,25 +107,25 @@ quit                                                          close the terminal
         else {
             throw `"${args[0]}" is not a side, must be buy or sell`;
         }
-        // determine the amount
-        let amount = parseInt(args[1].replace('$', ''));
-        if (!_.isNumber(amount)) {
-            throw `"${args[1]}" is not a number`;
-        }
         // fetch the asset from alpaca
         let asset = await this.client
             .getAsset({
-            asset_id_or_symbol: args[2].toUpperCase(),
+            asset_id_or_symbol: args[1].toUpperCase(),
         })
             .catch(() => undefined);
         if (!asset) {
-            throw `symbol "${args[2]}" could not be found`;
+            throw `symbol "${args[1]}" could not be found`;
+        }
+        // determine the amount
+        let amount = parseInt(args[2].replace('$', ''));
+        if (!_.isNumber(amount)) {
+            throw `"${args[2]}" is not a number`;
         }
         // place the order
         await this.client
             .placeOrder({
             symbol: asset.symbol,
-            qty: Math.floor(args[1].includes('$')
+            qty: Math.floor(args[2].includes('$')
                 ? new Decimal(amount)
                     .div((await this.client.getLastTrade({
                     symbol: asset.symbol,
