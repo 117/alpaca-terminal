@@ -16,16 +16,17 @@ export const repl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 }), commands = Array.of(help, authenticate, account, buy, sell, close, orders, positions, exit);
-export var client;
 async function next() {
     repl.question('> ', async (input) => {
         try {
-            let args = input.toLowerCase().split(' '), command = commands.find((command) => command.aliases.includes(args[0]));
+            let args = input.split(' '), command = commands.find((command) => command.aliases.includes(args[0].toLowerCase()));
             if (command) {
-                await command.execute(args);
+                await command
+                    .execute(args.slice(1))
+                    .catch((error) => console.log(chalk.red(error)));
             }
             else {
-                console.log('command not found');
+                console.log(chalk.red(new Error('command not found')));
             }
         }
         finally {
