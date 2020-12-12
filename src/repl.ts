@@ -10,6 +10,7 @@ export class REPL {
     protected parameters: {
       prompt: string
       welcomeMessage: string
+      aliases?: { [key: string]: string }
     },
   ) {}
 
@@ -23,6 +24,13 @@ export class REPL {
       try {
         let args = input.split(' '),
           label = args[0].toLowerCase()
+
+        // map any aliases
+        if (this.parameters.aliases) {
+          if (label in this.parameters.aliases) {
+            label = this.parameters.aliases[label]
+          }
+        }
 
         if (label in this) {
           // @ts-ignore

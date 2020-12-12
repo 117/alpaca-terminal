@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import pkg from '../package.json';
-import chalk from 'chalk';
 import { REPL } from './repl.js';
 import { AlpacaClient } from '@master-chief/alpaca';
 import { default as Decimal } from 'decimal.js';
@@ -8,13 +7,37 @@ export class Terminal extends REPL {
     constructor() {
         super({
             prompt: '> ',
-            welcomeMessage: `${pkg.name} ${pkg.version}\ntype "help" or "h" to list commands`,
+            welcomeMessage: `${pkg.name} ${pkg.version}\ntype "help" or "h" to view commands`,
+            aliases: {
+                u: 'use',
+                auth: 'use',
+                login: 'use',
+                a: 'account',
+                acc: 'account',
+                o: 'order',
+                or: 'or',
+                ord: 'ord',
+                c: 'close',
+                ca: 'cancel',
+                cl: 'cancel',
+                os: 'orders',
+                ol: 'orders',
+                ords: 'orders',
+                p: 'positions',
+                ps: 'positions',
+                po: 'positions',
+                pos: 'positions',
+                q: 'quit',
+                e: 'quit',
+                exit: 'quit',
+                leave: 'quit',
+            },
         });
     }
     async help() {
         ;
-        `help           [command]                                      view help
-authenticate   <key_id> <secret>                              authenticate with alpaca
+        `help           [command]                                      view command help
+use            <key_id> <secret>                              authenticate with alpaca
 account        [field]                                        view account
 order          <side> <symbol> <amount> [tif] [limit_price]   buy a stock
 close          <symbol|all|*>                                 close one or many positions
@@ -25,7 +48,7 @@ quit                                                          close the terminal
             .split('\n')
             .forEach((line) => console.log(line));
     }
-    async authenticate(...args) {
+    async use(...args) {
         // make sure minimum arg length is met
         if (args.length < 2) {
             throw 'not enough args';
@@ -130,9 +153,16 @@ quit                                                          close the terminal
             status: args[0] ? args[0] : 'open',
         })
             .then((orders) => {
-            orders.forEach((order) => console.log(order.symbol.padEnd(8), order.side.padEnd(6), order.qty.toString().padEnd(8), order.filled_avg_price
-                ? order.filled_avg_price.toString().padEnd(8)
-                : '-', order.status.padEnd(16), order.id.padEnd(36)));
+            if (_.isEmpty(orders)) {
+                console.log('no positions found');
+                return;
+            }
+            orders.forEach((order) => {
+                console.log('symbol'.padEnd(8), 'side'.padEnd(6), 'qty'.padEnd(8), 'price'.padEnd(8), 'status'.padEnd(12), 'id'.padEnd(36));
+                console.log(order.symbol.padEnd(8), order.side.padEnd(6), order.qty.toString().padEnd(8), (order.filled_avg_price
+                    ? order.filled_avg_price.toString()
+                    : '-').padEnd(8), order.status.padEnd(12), order.id.padEnd(36));
+            });
         })
             .catch((error) => {
             throw error.message;
@@ -173,18 +203,14 @@ quit                                                          close the terminal
         await this.client
             .getPositions()
             .then((positions) => {
-            console.log('symbol'.padEnd(8), 'price'.padEnd(8), 'qty'.padEnd(8), 'market_value'.padEnd(14), 'pnl'.padEnd(8));
-            positions
-                .concat({
-                symbol: 'ACB',
-                current_price: 19.7,
-                qty: 7,
-                market_value: 137.9,
-                unrealized_pl: 9.48,
-            })
-                .forEach((position) => console.log(position.symbol.padEnd(8), `$${position.current_price.toLocaleString()}`.padEnd(8), position.qty.toLocaleString().padEnd(8), `${position.market_value.toLocaleString().padEnd(14)}`, `${position.unrealized_pl > 0
-                ? chalk.green(`+$${position.unrealized_pl.toLocaleString()}`)
-                : chalk.red(`-$${position.unrealized_pl.toLocaleString()}`)}`));
+            if (_.isEmpty(positions)) {
+                console.log('no positions found');
+                return;
+            }
+            console.log('symbol'.padEnd(8), 'price'.padEnd(8), 'qty'.padEnd(8), 'market_value'.padEnd(14), 'profit'.padEnd(8));
+            positions.forEach((position) => console.log(position.symbol.padEnd(8), `$${position.current_price.toLocaleString()}`.padEnd(8), position.qty.toLocaleString().padEnd(8), `${position.market_value.toLocaleString().padEnd(14)}`, `${position.unrealized_pl > 0
+                ? `+$${position.unrealized_pl.toLocaleString()}`
+                : `-$${position.unrealized_pl.toLocaleString()}`}`));
         })
             .catch((error) => {
             throw error.message;

@@ -15,6 +15,12 @@ export class REPL {
         this.interface.question(this.parameters.prompt, async (input) => {
             try {
                 let args = input.split(' '), label = args[0].toLowerCase();
+                // map any aliases
+                if (this.parameters.aliases) {
+                    if (label in this.parameters.aliases) {
+                        label = this.parameters.aliases[label];
+                    }
+                }
                 if (label in this) {
                     // @ts-ignore
                     await this[label](...args.slice(1)).catch((error) => console.log(error));
