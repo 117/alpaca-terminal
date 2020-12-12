@@ -12,9 +12,7 @@ export default {
         `${chalk
           .yellowBright(command.aliases[1])
           .concat(command.aliases[0].slice(command.aliases[1].length))
-          .padEnd(24)} ${chalk.gray(command.usage.padEnd(38))} ${chalk.gray(
-          command.desc,
-        )}`,
+          .padEnd(24)} ${chalk.gray(command.usage.padEnd(38))} ${command.desc}`,
       ),
     ),
 }

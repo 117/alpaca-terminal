@@ -1,10 +1,14 @@
 {
   "name": "alpaca-terminal",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "a command line terminal for trading with the Alpaca API",
   "type": "module",
+  "bin": {
+    "alpaca-terminal": "dist/src/main.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run clean && tsc && ./shebang.sh",
+    "clean": "npm i && rimraf dist"
   },
   "repository": {
     "type": "git",
@@ -20,6 +24,7 @@
     "chalk": "^4.1.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.12"
+    "@types/node": "^14.14.12",
+    "rimraf": "^3.0.2"
   }
 }
