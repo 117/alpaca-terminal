@@ -9,7 +9,7 @@ import sell from './sell.js'
 import close from './close.js'
 import orders from './orders.js'
 import positions from './positions.js'
-import exit from './exit.js'
+import quit from './quit.js'
 
 import { client } from './authenticate.js'
 
@@ -31,7 +31,7 @@ export const repl = readline.createInterface({
     close,
     orders,
     positions,
-    exit,
+    quit,
   )
 
 async function next() {
@@ -46,7 +46,8 @@ async function next() {
         // if the command is not authenticate
         if (
           command.aliases[0] != 'authenticate' &&
-          command.aliases[0] != 'help'
+          command.aliases[0] != 'help' &&
+          command.aliases[0] != 'quit'
         ) {
           // check if the client is authenticated
           if (!client || !(await client.isAuthenticated())) {

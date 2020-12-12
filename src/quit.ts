@@ -1,5 +1,5 @@
 export default {
-  aliases: ['exit', 'e'],
+  aliases: ['quit', 'q'],
   usage: '',
   description: 'close the terminal',
   execute: async () => {

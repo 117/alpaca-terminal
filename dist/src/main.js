@@ -1,5 +1,3 @@
-#!/bin/sh 
-':' //# comment; exec /usr/bin/env node --experimental-top-level-await --no-warnings --experimental-json-modules --experimental-import-meta-resolve "$0" "$@"
 import pkg from '../package.json';
 import chalk from 'chalk';
 import readline from 'readline';
@@ -11,12 +9,12 @@ import sell from './sell.js';
 import close from './close.js';
 import orders from './orders.js';
 import positions from './positions.js';
-import exit from './exit.js';
+import quit from './quit.js';
 import { client } from './authenticate.js';
 export const repl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-}), commands = Array.of(help, authenticate, account, buy, sell, close, orders, positions, exit);
+}), commands = Array.of(help, authenticate, account, buy, sell, close, orders, positions, quit);
 async function next() {
     repl.question('> ', async (input) => {
         try {
@@ -24,7 +22,8 @@ async function next() {
             if (command) {
                 // if the command is not authenticate
                 if (command.aliases[0] != 'authenticate' &&
-                    command.aliases[0] != 'help') {
+                    command.aliases[0] != 'help' &&
+                    command.aliases[0] != 'quit') {
                     // check if the client is authenticated
                     if (!client || !(await client.isAuthenticated())) {
                         throw new Error('not authenticated');
