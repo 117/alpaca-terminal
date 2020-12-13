@@ -253,7 +253,7 @@ quit`
             throw 'not authenticated';
         }
         // make sure minimum arg length is met
-        if (args.length < 3) {
+        if (args.length < 1) {
             throw 'not enough args';
         }
         // check if a wildcard was provided

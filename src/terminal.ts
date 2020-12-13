@@ -343,7 +343,7 @@ quit`
     }
 
     // make sure minimum arg length is met
-    if (args.length < 3) {
+    if (args.length < 1) {
       throw 'not enough args'
     }
 
