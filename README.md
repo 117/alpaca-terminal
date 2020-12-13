@@ -7,7 +7,7 @@
 
 a command line terminal for trading with the Alpaca API
 
-```cmd
+```terminal
 alpaca-terminal 1.1.7
 type "help" or "h" to view commands
 > h
