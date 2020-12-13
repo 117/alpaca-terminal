@@ -7,73 +7,72 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const package_json_1 = __importDefault(require("../package.json"));
-const repl_js_1 = require("./repl.js");
+const readline_1 = __importDefault(require("readline"));
 const alpaca_1 = require("@master-chief/alpaca");
 const decimal_js_1 = __importDefault(require("decimal.js"));
-new (class extends repl_js_1.REPL {
-    constructor() {
-        super({
-            prompt: '> ',
-            welcomeMessage: `${package_json_1.default.name} ${package_json_1.default.version}\ntype "help" or "h" to view commands`,
-            aliases: {
-                'h': 'help',
-                '?': 'help',
-                'u': 'use',
-                'auth': 'use',
-                'login': 'use',
-                'a': 'account',
-                'acc': 'account',
-                'b': 'buy',
-                's': 'sell',
-                'o': 'orders',
-                'or': 'orders',
-                'ord': 'orders',
-                'c': 'close',
-                'ca': 'cancel',
-                'cl': 'cancel',
-                'os': 'orders',
-                'ol': 'orders',
-                'ords': 'orders',
-                'p': 'positions',
-                'ps': 'positions',
-                'po': 'positions',
-                'pos': 'positions',
-                'q': 'quit',
-                'e': 'quit',
-                'exit': 'quit',
-                'leave': 'quit',
-            },
+new (class {
+    constructor(parameters) {
+        this.parameters = parameters;
+        this.interface = readline_1.default.createInterface({
+            input: process.stdin,
+            output: process.stdout,
         });
     }
-    async run() {
-        let _log = console.log;
-        // null route console.log
-        console.log = () => null;
-        try {
-            await this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
+    async loop() {
+        if (!('welcome' in this)) {
+            console.log(this.parameters.welcomeMessage);
+            Object.assign(this, { welcome: true });
+            let _log = console.log;
+            // null route console.log
+            console.log = () => null;
+            try {
+                await this.authenticate(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
+            }
+            catch { }
+            // re-route console.log
+            console.log = _log;
         }
-        catch { }
-        // re-route console.log
-        console.log = _log;
-        // loop forever
-        this.loop();
+        this.interface.question(this.parameters.prompt, async (input) => {
+            try {
+                let args = input.split(' '), label = args[0].toLowerCase();
+                // map any aliases
+                if (this.parameters.commandMap) {
+                    if (label in this.parameters.commandMap) {
+                        label = this.parameters.commandMap[label];
+                    }
+                }
+                if (label in this.parameters.commandMap) {
+                    // @ts-ignore
+                    await this[label](...args.slice(1)).catch((error) => console.log(error));
+                }
+                else {
+                    console.log(`command not found`);
+                }
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                this.loop();
+            }
+        });
     }
     async help() {
         ;
-        `help           [command]
-use            <key> <secret>
-account        [field]
-buy            <symbol> <amount> [tif] [limit_price]
-sell           <symbol> <amount> [tif] [limit_price]
-close          <symbol|all|*>
-cancel         <symbol|order_id|all|*>
-orders         [status]
+        `help          [command]
+authenticate  <key> <secret>
+account       [field]
+buy           <symbol> <amount> [tif] [limit_price]
+sell          <symbol> <amount> [tif] [limit_price]
+close         <symbol|all|*>
+cancel        <symbol|order_id|all|*>
+orders        [status]
 positions
 quit`
             .split('\n')
             .forEach((line) => console.log(line));
     }
-    async use(...args) {
+    async authenticate(...args) {
         // make sure minimum arg length is met
         if (args.length < 2) {
             throw 'not enough args';
@@ -280,4 +279,37 @@ quit`
         console.log('goodbye');
         process.exit();
     }
-})().run();
+})({
+    prompt: '> ',
+    welcomeMessage: `${package_json_1.default.name} ${package_json_1.default.version}\ntype "help" or "h" to view commands`,
+    commandMap: {
+        'help': 'help',
+        'h': 'help',
+        '?': 'help',
+        'auth': 'authenticate',
+        'authenticate': 'authenticate',
+        'a': 'account',
+        'acc': 'account',
+        'account': 'account',
+        'b': 'buy',
+        'buy': 'buy',
+        's': 'sell',
+        'sell': 'sell',
+        'o': 'orders',
+        'or': 'orders',
+        'orders': 'orders',
+        'c': 'close',
+        'close': 'close',
+        'ca': 'cancel',
+        'cancel': 'cancel',
+        'p': 'positions',
+        'ps': 'positions',
+        'po': 'positions',
+        'pos': 'positions',
+        'positions': 'positions',
+        'q': 'quit',
+        'e': 'quit',
+        'exit': 'quit',
+        'quit': 'quit',
+    },
+}).loop();
