@@ -44,6 +44,13 @@ new (class extends repl_js_1.REPL {
                 'leave': 'quit',
             },
         });
+        let _log = console.log;
+        // null route console.log
+        console.log = () => null;
+        // attempt auth with env vars
+        this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
+        // re-route console.log
+        console.log = _log;
     }
     async help() {
         ;
@@ -61,15 +68,14 @@ quit`
             .forEach((line) => console.log(line));
     }
     async use(...args) {
-        if (args.length < 2 &&
-            !process.env['ALPACA_KEY'] &&
-            !process.env['ALPACA_SECRET']) {
+        // make sure minimum arg length is met
+        if (args.length < 2) {
             throw 'not enough args';
         }
         let newClient = new alpaca_1.AlpacaClient({
             credentials: {
-                key: args[0] ?? process.env['ALPACA_KEY'],
-                secret: args[1] ?? process.env['ALPACA_SECRET'],
+                key: args[0],
+                secret: args[1],
             },
             rate_limit: true,
         });
