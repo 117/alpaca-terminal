@@ -43,19 +43,23 @@ new (class extends REPL {
       },
     })
 
-    let _log = console.log
-
-    // null route console.log
-    console.log = () => null
-
     // attempt auth with env vars
-    this.use(
-      process.env['ALPACA_KEY'] ?? '',
-      process.env['ALPACA_SECRET'] ?? '',
-    )
+    ;(async () => {
+      let _log = console.log
 
-    // re-route console.log
-    console.log = _log
+      // null route console.log
+      console.log = () => null
+
+      try {
+        this.use(
+          process.env['ALPACA_KEY'] ?? '',
+          process.env['ALPACA_SECRET'] ?? '',
+        )
+      } catch {}
+
+      // re-route console.log
+      console.log = _log
+    })()
   }
 
   async help() {
