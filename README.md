@@ -6,3 +6,5 @@
 ![prettier](https://img.shields.io/static/v1?label=code%20style&message=prettier&color=ff51bc&style=flat-square)
 
 a command line terminal for trading with the Alpaca API
+
+![alpaca terminal](https://github.com/117/alpaca-terminal/raw/main/screenshot.png)
