@@ -7,4 +7,19 @@
 
 a command line terminal for trading with the Alpaca API
 
-![alpaca terminal](https://github.com/117/alpaca-terminal/raw/main/screenshot.png)
+```cmd
+alpaca-terminal 1.1.7
+type "help" or "h" to view commands
+> h
+help           [command]
+use            <key> <secret>
+account        [field]
+buy            <symbol> <amount> [tif] [limit_price]
+sell           <symbol> <amount> [tif] [limit_price]
+close          <symbol|all|*>
+cancel         <symbol|order_id|all|*>
+orders         [status]
+positions
+quit
+>
+```
