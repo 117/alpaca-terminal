@@ -16,9 +16,11 @@ export class Terminal extends REPL {
                 'login': 'use',
                 'a': 'account',
                 'acc': 'account',
-                'o': 'order',
-                'or': 'or',
-                'ord': 'ord',
+                'b': 'buy',
+                's': 'sell',
+                'o': 'orders',
+                'or': 'orders',
+                'ord': 'orders',
                 'c': 'close',
                 'ca': 'cancel',
                 'cl': 'cancel',
@@ -38,15 +40,16 @@ export class Terminal extends REPL {
     }
     async help() {
         ;
-        `help           [command]                                      view command help
-use            <key_id> <secret>                              authenticate with alpaca
-account        [field]                                        view account
-order          <side> <symbol> <amount> [tif] [limit_price]   buy a stock
-close          <symbol|all|*>                                 close one or many positions
-cancel         <symbol|order_id|all|*>                        cancel one or many orders
-orders         [status]                                       view recent orders
-positions                                                     view positions
-quit                                                          close the terminal`
+        `help           [command]
+use            <key_id> <secret>
+account        [field]
+buy            <symbol> <amount> [tif] [limit_price]
+sell           <symbol> <amount> [tif] [limit_price]
+close          <symbol|all|*>
+cancel         <symbol|order_id|all|*>
+orders         [status]
+positions
+quit`
             .split('\n')
             .forEach((line) => console.log(line));
     }
@@ -89,7 +92,13 @@ quit                                                          close the terminal
             }
         }
     }
-    async order(...args) {
+    async buy(...args) {
+        await this._order('buy', ...args);
+    }
+    async sell(...args) {
+        await this._order('sell', ...args);
+    }
+    async _order(...args) {
         // make sure client has been setup
         if (!this.client) {
             throw 'not authenticated';
@@ -156,7 +165,7 @@ quit                                                          close the terminal
         })
             .then((orders) => {
             if (_.isEmpty(orders)) {
-                console.log('no positions found');
+                console.log('no orders found');
                 return;
             }
             console.log('symbol'.padEnd(8), 'side'.padEnd(6), 'qty'.padEnd(8), 'price'.padEnd(8), 'status'.padEnd(12), 'id'.padEnd(36));
