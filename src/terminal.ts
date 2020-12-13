@@ -1,14 +1,12 @@
 import _ from 'lodash'
-
 import pkg from '../package.json'
-import chalk from 'chalk'
 
 import { REPL } from './repl.js'
 import { AlpacaClient } from '@master-chief/alpaca'
 import { OrderSide } from '@master-chief/alpaca/types/entities'
 import { default as Decimal } from 'decimal.js'
 
-export class Terminal extends REPL {
+new (class extends REPL {
   private client: AlpacaClient | undefined
 
   constructor() {
@@ -48,7 +46,7 @@ export class Terminal extends REPL {
 
   async help() {
     ;`help           [command]
-use            <key_id> <secret>
+use            <key> <secret>
 account        [field]
 buy            <symbol> <amount> [tif] [limit_price]
 sell           <symbol> <amount> [tif] [limit_price]
@@ -69,8 +67,8 @@ quit`
 
     let newClient = new AlpacaClient({
       credentials: {
-        key: args[0],
-        secret: args[1],
+        key: args[0] ?? process.env['ALPACA_KEY'],
+        secret: args[1] ?? process.env['ALPACA_SECRET'],
       },
       rate_limit: true,
     })
@@ -115,14 +113,14 @@ quit`
   }
 
   async buy(...args: Array<string>) {
-    await this._order('buy', ...args)
+    await this.order('buy', ...args)
   }
 
   async sell(...args: Array<string>) {
-    await this._order('sell', ...args)
+    await this.order('sell', ...args)
   }
 
-  async _order(...args: Array<string>) {
+  async order(...args: Array<string>) {
     // make sure client has been setup
     if (!this.client) {
       throw 'not authenticated'
@@ -357,4 +355,4 @@ quit`
     console.log('goodbye')
     process.exit()
   }
-}
+})().loop()

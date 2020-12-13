@@ -1,13 +1,20 @@
-import _ from 'lodash';
-import pkg from '../package.json';
-import { REPL } from './repl.js';
-import { AlpacaClient } from '@master-chief/alpaca';
-import { default as Decimal } from 'decimal.js';
-export class Terminal extends REPL {
+#!/bin/sh 
+':' //# comment; exec /usr/bin/env node "$0" "$@"
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const lodash_1 = __importDefault(require("lodash"));
+const package_json_1 = __importDefault(require("../package.json"));
+const repl_js_1 = require("./repl.js");
+const alpaca_1 = require("@master-chief/alpaca");
+const decimal_js_1 = __importDefault(require("decimal.js"));
+new (class extends repl_js_1.REPL {
     constructor() {
         super({
             prompt: '> ',
-            welcomeMessage: `${pkg.name} ${pkg.version}\ntype "help" or "h" to view commands`,
+            welcomeMessage: `${package_json_1.default.name} ${package_json_1.default.version}\ntype "help" or "h" to view commands`,
             aliases: {
                 'h': 'help',
                 '?': 'help',
@@ -41,7 +48,7 @@ export class Terminal extends REPL {
     async help() {
         ;
         `help           [command]
-use            <key_id> <secret>
+use            <key> <secret>
 account        [field]
 buy            <symbol> <amount> [tif] [limit_price]
 sell           <symbol> <amount> [tif] [limit_price]
@@ -58,10 +65,10 @@ quit`
         if (args.length < 2) {
             throw 'not enough args';
         }
-        let newClient = new AlpacaClient({
+        let newClient = new alpaca_1.AlpacaClient({
             credentials: {
-                key: args[0],
-                secret: args[1],
+                key: args[0] ?? process.env['ALPACA_KEY'],
+                secret: args[1] ?? process.env['ALPACA_SECRET'],
             },
             rate_limit: true,
         });
@@ -87,18 +94,18 @@ quit`
             return;
         }
         for (let [key, value] of Object.entries(account)) {
-            if (!_.isFunction(value)) {
+            if (!lodash_1.default.isFunction(value)) {
                 console.log(key.padEnd(24), value);
             }
         }
     }
     async buy(...args) {
-        await this._order('buy', ...args);
+        await this.order('buy', ...args);
     }
     async sell(...args) {
-        await this._order('sell', ...args);
+        await this.order('sell', ...args);
     }
-    async _order(...args) {
+    async order(...args) {
         // make sure client has been setup
         if (!this.client) {
             throw 'not authenticated';
@@ -129,7 +136,7 @@ quit`
         }
         // determine the amount
         let amount = parseInt(args[2].replace('$', ''));
-        if (!_.isNumber(amount)) {
+        if (!lodash_1.default.isNumber(amount)) {
             throw `"${args[2]}" is not a number`;
         }
         // place the order
@@ -137,7 +144,7 @@ quit`
             .placeOrder({
             symbol: asset.symbol,
             qty: Math.floor(args[2].includes('$')
-                ? new Decimal(amount)
+                ? new decimal_js_1.default(amount)
                     .div((await this.client.getLastTrade({
                     symbol: asset.symbol,
                 })).last.price)
@@ -164,7 +171,7 @@ quit`
             status: args[0] ? args[0] : 'open',
         })
             .then((orders) => {
-            if (_.isEmpty(orders)) {
+            if (lodash_1.default.isEmpty(orders)) {
                 console.log('no orders found');
                 return;
             }
@@ -191,7 +198,7 @@ quit`
         let orders = await this.client.getOrders(), found = args[0] == '*' || args[0].toLowerCase() == 'all'
             ? orders
             : orders.filter((order) => order.id == args[0] || order.symbol == args[0].toUpperCase());
-        if (_.isEmpty(found)) {
+        if (lodash_1.default.isEmpty(found)) {
             console.log(`no orders found for "${args[0]}"`);
         }
         await Promise.allSettled(found.map(async (order) => 
@@ -214,7 +221,7 @@ quit`
         await this.client
             .getPositions()
             .then((positions) => {
-            if (_.isEmpty(positions)) {
+            if (lodash_1.default.isEmpty(positions)) {
                 console.log('no positions found');
                 return;
             }
@@ -260,4 +267,4 @@ quit`
         console.log('goodbye');
         process.exit();
     }
-}
+})().loop();
