@@ -36,9 +36,9 @@ From NPM:
 Launch the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.2.1
+alpaca-terminal 1.3.0
 type "help" or "h" to view commands
-> h
+> help
 help          [command]
 authenticate  <key> <secret>
 account       [field]
