@@ -61,8 +61,9 @@ quit`
             .forEach((line) => console.log(line));
     }
     async use(...args) {
-        // make sure minimum arg length is met
-        if (args.length < 2) {
+        if (args.length < 2 &&
+            !process.env['ALPACA_KEY'] &&
+            !process.env['ALPACA_SECRET']) {
             throw 'not enough args';
         }
         let newClient = new alpaca_1.AlpacaClient({
