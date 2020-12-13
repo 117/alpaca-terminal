@@ -44,17 +44,19 @@ new (class extends repl_js_1.REPL {
                 'leave': 'quit',
             },
         });
-        (async () => {
-            let _log = console.log;
-            // null route console.log
-            console.log = () => null;
-            try {
-                await this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
-            }
-            catch { }
-            // re-route console.log
-            console.log = _log;
-        })();
+    }
+    async run() {
+        let _log = console.log;
+        // null route console.log
+        console.log = () => null;
+        try {
+            await this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
+        }
+        catch { }
+        // re-route console.log
+        console.log = _log;
+        // loop forever
+        this.loop();
     }
     async help() {
         ;
@@ -278,4 +280,4 @@ quit`
         console.log('goodbye');
         process.exit();
     }
-})().loop();
+})().run();
