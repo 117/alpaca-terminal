@@ -28,10 +28,19 @@ a command line terminal for trading with the Alpaca API
 From NPM:
 
 ```cmd
-> npm i -g @master-chief/alpaca-terminal
+$ npm i -g @master-chief/alpaca-terminal
 ```
 
 ## Usage
+
+### Contents
+
+- [Launching](#launching)
+- [Authentication](#authentication)
+- [Ordering](#ordering)
+- [Aliases](#aliases)
+
+### Launching
 
 Launch the terminal with the `alpaca` or `alpaca-terminal` command.
 
@@ -52,6 +61,57 @@ quit
 >
 ```
 
+### Authentication
+
+To begin trading you must first authenticate, there are two ways to do this:
+
+With env:
+
+```cmd
+$ export ALPACA_KEY=******
+$ export ALPACA_SECRET=************
+```
+
+With the terminal:
+
+```terminal
+> authenticate ****** ************
+```
+
+You should now be able to view and manage your alpaca account.
+
+### Ordering
+
+To buy a stock simply provide the `symbol` and `amount`.
+
+```terminal
+> buy SPY 1
+order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
+```
+
+That's it! You bought one share of `SPY`. To sell just change the command.
+
+### Aliases
+
+Below are the command aliases available.
+
+| Command        | Aliases             |
+| :------------- | :------------------ |
+| `help`         | `h` `?`             |
+| `authenticate` | `auth`              |
+| `account`      | `acc` `a`           |
+| `buy`          | `b`                 |
+| `sell`         | `s`                 |
+| `orders`       | `o`                 |
+| `close`        | `c`                 |
+| `cancel`       | `ca`                |
+| `positions`    | `pos` `ps` `po` `p` |
+| `quit`         | `exit` `e` `q`      |
+
+## To Do
+
+More is coming! This project is early in development.
+
 ## Contributing
 
-Pull requests are encouraged. 🥳
+Pull requests are encouraged. 🙂
