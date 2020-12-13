@@ -2,8 +2,11 @@ import _ from 'lodash'
 import pkg from '../package.json'
 import readline from 'readline'
 
-import { AlpacaClient } from '@master-chief/alpaca'
-import { OrderSide } from '@master-chief/alpaca/types/entities'
+import {
+  OrderSide,
+  OrderTimeInForce,
+} from '@master-chief/alpaca/types/entities'
+import { AlpacaClient, PlaceOrder } from '@master-chief/alpaca'
 import { default as Decimal } from 'decimal.js'
 
 new (class {
@@ -187,27 +190,33 @@ quit`
       throw `"${args[2]}" is not a number`
     }
 
+    let params: PlaceOrder = {
+      symbol: asset.symbol,
+      qty: Math.floor(
+        args[2].includes('$')
+          ? new Decimal(amount)
+              .div(
+                (
+                  await this.client.getLastTrade({
+                    symbol: asset.symbol,
+                  })
+                ).last.price,
+              )
+              .toNumber()
+          : amount,
+      ),
+      side: side as OrderSide,
+      type: args[4] ? 'limit' : 'market',
+      time_in_force: (args[3] as OrderTimeInForce) ?? 'day',
+    }
+
+    if (params.type == 'limit') {
+      params.limit_price = new Decimal(args[4]).toNumber()
+    }
+
     // place the order
     await this.client
-      .placeOrder({
-        symbol: asset.symbol,
-        qty: Math.floor(
-          args[2].includes('$')
-            ? new Decimal(amount)
-                .div(
-                  (
-                    await this.client.getLastTrade({
-                      symbol: asset.symbol,
-                    })
-                  ).last.price,
-                )
-                .toNumber()
-            : amount,
-        ),
-        side: side as OrderSide,
-        type: 'market',
-        time_in_force: 'day',
-      })
+      .placeOrder(params)
       .then((order) => console.log(`order placed with ID ${order.id}`))
       .catch((error) => {
         throw error.message

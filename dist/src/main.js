@@ -151,9 +151,7 @@ quit`
         if (!lodash_1.default.isNumber(amount)) {
             throw `"${args[2]}" is not a number`;
         }
-        // place the order
-        await this.client
-            .placeOrder({
+        let params = {
             symbol: asset.symbol,
             qty: Math.floor(args[2].includes('$')
                 ? new decimal_js_1.default(amount)
@@ -163,9 +161,15 @@ quit`
                     .toNumber()
                 : amount),
             side: side,
-            type: 'market',
-            time_in_force: 'day',
-        })
+            type: args[4] ? 'limit' : 'market',
+            time_in_force: args[3] ?? 'day',
+        };
+        if (params.type == 'limit') {
+            params.limit_price = new decimal_js_1.default(args[4]).toNumber();
+        }
+        // place the order
+        await this.client
+            .placeOrder(params)
             .then((order) => console.log(`order placed with ID ${order.id}`))
             .catch((error) => {
             throw error.message;
