@@ -22,9 +22,7 @@ a command line terminal for trading with the Alpaca API
 - [x] Cancel orders with optional wildcards.
 - [x] View recent orders.
 - [x] View positions.
-- [ ] Place limit orders.
-- [ ] Stop loss and take profit management.
-- [ ] Watchlist support.
+- [ ] More soon.
 
 ## Install
 
