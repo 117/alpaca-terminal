@@ -28,7 +28,7 @@ a command line terminal for trading with the Alpaca API
 From NPM:
 
 ```cmd
-$ npm i -g @master-chief/alpaca-terminal
+$ npm i -g alpaca-terminal
 ```
 
 ## Usage
