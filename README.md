@@ -78,8 +78,6 @@ With the terminal:
 > authenticate ****** ************
 ```
 
-You should now be able to view and manage your alpaca account.
-
 ### Ordering
 
 To buy a stock simply provide the `symbol` and `amount`.
@@ -88,8 +86,6 @@ To buy a stock simply provide the `symbol` and `amount`.
 > buy SPY 1
 order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
 ```
-
-That's it! You bought one share of `SPY`. To sell just change the command.
 
 ### Aliases
 
