@@ -37,17 +37,17 @@ From NPM:
 Launch the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.1.7
+alpaca-terminal 1.2.1
 type "help" or "h" to view commands
 > h
-help           [command]
-use            <key> <secret>
-account        [field]
-buy            <symbol> <amount> [tif] [limit_price]
-sell           <symbol> <amount> [tif] [limit_price]
-close          <symbol|all|*>
-cancel         <symbol|order_id|all|*>
-orders         [status]
+help          [command]
+authenticate  <key> <secret>
+account       [field]
+buy           <symbol> <amount> [tif] [limit_price]
+sell          <symbol> <amount> [tif] [limit_price]
+close         <symbol|all|*>
+cancel        <symbol|order_id|all|*>
+orders        [status]
 positions
 quit
 >
