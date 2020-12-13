@@ -7,6 +7,37 @@
 
 a command line terminal for trading with the Alpaca API
 
+## Contents
+
+- [Features](#features)
+- [Install](#install)
+- [Usage](#usage)
+- [Contributing](#contributing)
+
+## Features
+
+- [x] View account information.
+- [x] Buy and sell stocks.
+- [x] Close positions with optional wildcards.
+- [x] Cancel orders with optional wildcards.
+- [x] View recent orders.
+- [x] View positions.
+- [ ] Place limit orders.
+- [ ] Stop loss and take profit management.
+- [ ] Watchlist support.
+
+## Install
+
+From NPM:
+
+```cmd
+> npm i -g @master-chief/alpaca-terminal
+```
+
+## Usage
+
+Launch the terminal with the `alpaca` or `alpaca-terminal` command.
+
 ```terminal
 alpaca-terminal 1.1.7
 type "help" or "h" to view commands
@@ -23,3 +54,7 @@ positions
 quit
 >
 ```
+
+## Contributing
+
+Pull requests are encouraged. 🥳
