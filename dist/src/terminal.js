@@ -49,7 +49,7 @@ new (class extends repl_js_1.REPL {
             // null route console.log
             console.log = () => null;
             try {
-                this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
+                await this.use(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
             }
             catch { }
             // re-route console.log

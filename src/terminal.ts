@@ -51,7 +51,7 @@ new (class extends REPL {
       console.log = () => null
 
       try {
-        this.use(
+        await this.use(
           process.env['ALPACA_KEY'] ?? '',
           process.env['ALPACA_SECRET'] ?? '',
         )
