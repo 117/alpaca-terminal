@@ -36,7 +36,7 @@ $ npm i -g alpaca-terminal
 ### Contents
 
 - [Launching](#launching)
-- [Setup](#setup)
+- [Config](#config)
 - [Buy](#buy)
 - [Sell](#sell)
 - [Aliases](#aliases)
@@ -61,13 +61,21 @@ quit
 >
 ```
 
-### Setup
-
-Not authenticated? Don't worry!
+### Config
 
 After your first launch a configuration will be generated at
 `$HOME/.alpaca-terminal/config.json`. Modify it to your liking and be sure to
 set your Alpaca credentials.
+
+```json
+{
+  "colors": true,
+  "credentials": {
+    "key": "******",
+    "secret": "************"
+  }
+}
+```
 
 ### Buy
 
