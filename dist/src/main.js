@@ -6,10 +6,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
+const os_1 = __importDefault(require("os"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const package_json_1 = __importDefault(require("../package.json"));
 const readline_1 = __importDefault(require("readline"));
 const alpaca_1 = require("@master-chief/alpaca");
 const decimal_js_1 = __importDefault(require("decimal.js"));
+const CONFIG_DIR = path_1.default.join(os_1.default.homedir(), '.alpaca-terminal'), CONFIG_PATH = path_1.default.join(CONFIG_DIR, 'config.json');
+class Config {
+    constructor() {
+        this.credentials = {
+            key: '******',
+            secret: '************',
+        };
+    }
+}
+function getConfig() {
+    try {
+        return JSON.parse(fs_1.default.readFileSync(CONFIG_PATH).toString());
+    }
+    catch {
+        if (!fs_1.default.existsSync(CONFIG_DIR)) {
+            fs_1.default.mkdirSync(CONFIG_DIR);
+        }
+        let conf = new Config();
+        fs_1.default.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '\t'));
+        return conf;
+    }
+}
 new (class {
     constructor(parameters) {
         this.parameters = parameters;
@@ -17,20 +42,18 @@ new (class {
             input: process.stdin,
             output: process.stdout,
         });
+        this.client = new alpaca_1.AlpacaClient({
+            credentials: {
+                key: getConfig().credentials.key,
+                secret: getConfig().credentials.secret,
+            },
+            rate_limit: true,
+        });
     }
     async loop() {
         if (!('welcome' in this)) {
             console.log(this.parameters.welcomeMessage);
             Object.assign(this, { welcome: true });
-            let _log = console.log;
-            // null route console.log
-            console.log = () => null;
-            try {
-                await this.authenticate(process.env['ALPACA_KEY'] ?? '', process.env['ALPACA_SECRET'] ?? '');
-            }
-            catch { }
-            // re-route console.log
-            console.log = _log;
         }
         this.interface.question(this.parameters.prompt, async (input) => {
             try {
@@ -60,7 +83,6 @@ new (class {
     async help() {
         ;
         `help          [command]
-authenticate  <key> <secret>
 account       [field]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
@@ -86,7 +108,7 @@ quit`
         });
         // we weren't able to authenticate with alpaca
         if (!(await newClient.isAuthenticated())) {
-            throw 'failed to authenticate';
+            throw 'unauthorized, check your config';
         }
         this.client = newClient;
         console.log(`using account with number ${(await this.client.getAccount()).account_number}`);
@@ -97,7 +119,9 @@ quit`
             throw 'not authenticated';
         }
         // fetch the account
-        let account = await this.client.getAccount();
+        let account = await this.client.getAccount().catch((error) => {
+            throw error.message;
+        });
         if (args.length == 1) {
             if (!(args[0] in account)) {
                 throw `field "${args[0]}" not present in account`;
@@ -290,8 +314,6 @@ quit`
         'help': 'help',
         'h': 'help',
         '?': 'help',
-        'auth': 'authenticate',
-        'authenticate': 'authenticate',
         'a': 'account',
         'acc': 'account',
         'account': 'account',

@@ -36,8 +36,9 @@ $ npm i -g alpaca-terminal
 ### Contents
 
 - [Launching](#launching)
-- [Authentication](#authentication)
-- [Ordering](#ordering)
+- [Setup](#setup)
+- [Buy](#buy)
+- [Sell](#sell)
 - [Aliases](#aliases)
 
 ### Launching
@@ -49,7 +50,6 @@ alpaca-terminal 1.3.0
 type "help" or "h" to view commands
 > help
 help          [command]
-authenticate  <key> <secret>
 account       [field]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
@@ -61,29 +61,29 @@ quit
 >
 ```
 
-### Authentication
+### Setup
 
-To begin trading you must first authenticate, there are two ways to do this:
+Not authenticated? Don't worry!
 
-With env:
+After your first launch a configuration will be generated at
+`$HOME/.alpaca-terminal/config.json`. Modify it to your liking and be sure to
+set your Alpaca credentials.
 
-```cmd
-$ export ALPACA_KEY=******
-$ export ALPACA_SECRET=************
-```
-
-With the terminal:
-
-```terminal
-> authenticate ****** ************
-```
-
-### Ordering
+### Buy
 
 To buy a stock simply provide the `symbol` and `amount`.
 
 ```terminal
 > buy SPY 1
+order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
+```
+
+### Sell
+
+To sell a stock simply provide the `symbol` and `amount`.
+
+```terminal
+> sell TSLA 1
 order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
 ```
 

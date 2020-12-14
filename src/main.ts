@@ -1,4 +1,7 @@
 import _ from 'lodash'
+import os from 'os'
+import fs from 'fs'
+import path from 'path'
 import pkg from '../package.json'
 import readline from 'readline'
 
@@ -6,8 +9,33 @@ import {
   OrderSide,
   OrderTimeInForce,
 } from '@master-chief/alpaca/types/entities'
+
 import { AlpacaClient, PlaceOrder } from '@master-chief/alpaca'
 import { default as Decimal } from 'decimal.js'
+
+const CONFIG_DIR = path.join(os.homedir(), '.alpaca-terminal'),
+  CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')
+
+class Config {
+  credentials = {
+    key: '******',
+    secret: '************',
+  }
+}
+
+function getConfig(): Config {
+  try {
+    return JSON.parse(fs.readFileSync(CONFIG_PATH).toString())
+  } catch {
+    if (!fs.existsSync(CONFIG_DIR)) {
+      fs.mkdirSync(CONFIG_DIR)
+    }
+
+    let conf = new Config()
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '\t'))
+    return conf
+  }
+}
 
 new (class {
   private interface = readline.createInterface({
@@ -15,7 +43,13 @@ new (class {
     output: process.stdout,
   })
 
-  private client: AlpacaClient | undefined
+  private client: AlpacaClient = new AlpacaClient({
+    credentials: {
+      key: getConfig().credentials.key,
+      secret: getConfig().credentials.secret,
+    },
+    rate_limit: true,
+  })
 
   constructor(
     protected parameters: {
@@ -29,21 +63,6 @@ new (class {
     if (!('welcome' in this)) {
       console.log(this.parameters.welcomeMessage)
       Object.assign(this, { welcome: true })
-
-      let _log = console.log
-
-      // null route console.log
-      console.log = () => null
-
-      try {
-        await this.authenticate(
-          process.env['ALPACA_KEY'] ?? '',
-          process.env['ALPACA_SECRET'] ?? '',
-        )
-      } catch {}
-
-      // re-route console.log
-      console.log = _log
     }
 
     this.interface.question(this.parameters.prompt, async (input) => {
@@ -76,7 +95,6 @@ new (class {
 
   async help() {
     ;`help          [command]
-authenticate  <key> <secret>
 account       [field]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
@@ -105,7 +123,7 @@ quit`
 
     // we weren't able to authenticate with alpaca
     if (!(await newClient.isAuthenticated())) {
-      throw 'failed to authenticate'
+      throw 'unauthorized, check your config'
     }
 
     this.client = newClient
@@ -124,7 +142,9 @@ quit`
     }
 
     // fetch the account
-    let account = await this.client.getAccount()
+    let account = await this.client.getAccount().catch((error) => {
+      throw error.message
+    })
 
     if (args.length == 1) {
       if (!(args[0] in account)) {
@@ -398,8 +418,6 @@ quit`
     'help': 'help',
     'h': 'help',
     '?': 'help',
-    'auth': 'authenticate',
-    'authenticate': 'authenticate',
     'a': 'account',
     'acc': 'account',
     'account': 'account',
