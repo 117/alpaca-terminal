@@ -1,6 +1,6 @@
 {
   "name": "alpaca-terminal",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "a command line terminal for trading with the Alpaca API",
   "bin": {
     "alpaca-terminal": "dist/src/main.js",

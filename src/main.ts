@@ -32,7 +32,7 @@ function getConfig(): Config {
     }
 
     let conf = new Config()
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '\t'))
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '))
     return conf
   }
 }

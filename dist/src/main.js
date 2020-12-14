@@ -31,7 +31,7 @@ function getConfig() {
             fs_1.default.mkdirSync(CONFIG_DIR);
         }
         let conf = new Config();
-        fs_1.default.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '\t'));
+        fs_1.default.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '));
         return conf;
     }
 }
