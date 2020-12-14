@@ -46,7 +46,7 @@ $ npm i -g alpaca-terminal
 Launch the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.3.0
+alpaca-terminal 1.4.0
 type "help" or "h" to view commands
 > help
 help          [command]
