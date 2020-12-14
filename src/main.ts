@@ -336,13 +336,13 @@ quit`
         positions.forEach((position) =>
           console.log(
             position.symbol.padEnd(8),
-            `$${position.current_price.toLocaleString()}`.padEnd(8),
-            position.qty.toLocaleString().padEnd(8),
+            `$${position.current_price.toLocaleString()}`.padEnd(10),
+            position.qty.toLocaleString().padEnd(10),
             `${position.market_value.toLocaleString().padEnd(14)}`,
             `${
               position.unrealized_pl > 0
                 ? `+$${position.unrealized_pl.toLocaleString()}`
-                : `-$${position.unrealized_pl.toLocaleString()}`
+                : `$${position.unrealized_pl.toLocaleString()}`
             }`,
           ),
         )
