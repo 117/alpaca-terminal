@@ -241,7 +241,7 @@ quit`
                 console.log('no positions found');
                 return;
             }
-            console.log('symbol'.padEnd(8), 'price'.padEnd(8), 'qty'.padEnd(8), 'market_value'.padEnd(14), 'profit'.padEnd(8));
+            console.log('symbol'.padEnd(8), 'price'.padEnd(10), 'qty'.padEnd(10), 'market_value'.padEnd(14), 'profit'.padEnd(8));
             positions.forEach((position) => console.log(position.symbol.padEnd(8), `$${position.current_price.toLocaleString()}`.padEnd(10), position.qty.toLocaleString().padEnd(10), `${position.market_value.toLocaleString().padEnd(14)}`, `${position.unrealized_pl > 0
                 ? `+$${position.unrealized_pl.toLocaleString()}`
                 : `$${position.unrealized_pl.toLocaleString()}`}`));

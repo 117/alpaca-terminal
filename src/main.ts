@@ -327,8 +327,8 @@ quit`
 
         console.log(
           'symbol'.padEnd(8),
-          'price'.padEnd(8),
-          'qty'.padEnd(8),
+          'price'.padEnd(10),
+          'qty'.padEnd(10),
           'market_value'.padEnd(14),
           'profit'.padEnd(8),
         )
