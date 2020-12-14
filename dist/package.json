@@ -1,6 +1,6 @@
 {
     "name": "alpaca-terminal",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "description": "a command line terminal for trading with the Alpaca API",
     "bin": {
         "alpaca-terminal": "dist/src/main.js",
@@ -22,6 +22,7 @@
     "homepage": "https://github.com/117/alpaca-terminal#readme",
     "dependencies": {
         "@master-chief/alpaca": "^3.4.0",
+        "chalk": "^4.1.0",
         "decimal.js": "^10.2.1",
         "lodash": "^4.17.20"
     },

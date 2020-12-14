@@ -6,6 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
+const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -16,6 +17,7 @@ const decimal_js_1 = __importDefault(require("decimal.js"));
 const CONFIG_DIR = path_1.default.join(os_1.default.homedir(), '.alpaca-terminal'), CONFIG_PATH = path_1.default.join(CONFIG_DIR, 'config.json');
 class Config {
     constructor() {
+        this.colors = true;
         this.credentials = {
             key: '******',
             secret: '************',
@@ -34,6 +36,9 @@ function getConfig() {
         fs_1.default.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '));
         return conf;
     }
+}
+function color(chalk, input) {
+    return getConfig().colors ? chalk(input) : input;
 }
 new (class {
     constructor(parameters) {
@@ -267,8 +272,8 @@ quit`
             }
             console.log('symbol'.padEnd(8), 'price'.padEnd(10), 'qty'.padEnd(10), 'market_value'.padEnd(14), 'profit'.padEnd(8));
             positions.forEach((position) => console.log(position.symbol.padEnd(8), `$${position.current_price.toLocaleString()}`.padEnd(10), position.qty.toLocaleString().padEnd(10), `${position.market_value.toLocaleString().padEnd(14)}`, `${position.unrealized_pl > 0
-                ? `+$${position.unrealized_pl.toLocaleString()}`
-                : `$${position.unrealized_pl.toLocaleString()}`}`));
+                ? color(chalk_1.default.green, `+$${position.unrealized_pl.toLocaleString()}`)
+                : color(chalk_1.default.red, `-$${Math.abs(position.unrealized_pl).toLocaleString()}`)}`));
         })
             .catch((error) => {
             throw error.message;

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import chalk from 'chalk'
 import os from 'os'
 import fs from 'fs'
 import path from 'path'
@@ -17,6 +18,7 @@ const CONFIG_DIR = path.join(os.homedir(), '.alpaca-terminal'),
   CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')
 
 class Config {
+  colors = true
   credentials = {
     key: '******',
     secret: '************',
@@ -35,6 +37,10 @@ function getConfig(): Config {
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '))
     return conf
   }
+}
+
+function color(chalk: chalk.Chalk, input: string): string {
+  return getConfig().colors ? chalk(input) : input
 }
 
 new (class {
@@ -361,8 +367,14 @@ quit`
             `${position.market_value.toLocaleString().padEnd(14)}`,
             `${
               position.unrealized_pl > 0
-                ? `+$${position.unrealized_pl.toLocaleString()}`
-                : `$${position.unrealized_pl.toLocaleString()}`
+                ? color(
+                    chalk.green,
+                    `+$${position.unrealized_pl.toLocaleString()}`,
+                  )
+                : color(
+                    chalk.red,
+                    `-$${Math.abs(position.unrealized_pl).toLocaleString()}`,
+                  )
             }`,
           ),
         )
