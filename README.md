@@ -43,13 +43,14 @@ $ npm i -g alpaca-terminal
 
 ### Launching
 
-Launch the terminal with the `alpaca` or `alpaca-terminal` command.
+Open the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.5.0
+alpaca-terminal 1.6.0
 type "help" or "h" to view commands
 > help
 help          [command]
+config        [key] [value]
 account       [field]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
@@ -63,18 +64,28 @@ quit
 
 ### Config
 
-After your first launch a configuration will be generated at
-`$HOME/.alpaca-terminal/config.json`. Modify it to your liking and be sure to
-set your Alpaca credentials.
+To view all options type `config`.
 
-```json
-{
-  "colors": true,
-  "credentials": {
-    "key": "******",
-    "secret": "************"
-  }
-}
+```terminal
+> config
+colors                   true
+credentials.key          ******
+credentials.secret       ************
+parse_amount_as_shares   true
+```
+
+To view a specific option type `config <key>`.
+
+```terminal
+> config colors
+true
+```
+
+To set an option type `config <key> <value>`.
+
+```terminal
+> config credentials.key mykey
+mykey
 ```
 
 ### Buy
@@ -99,18 +110,18 @@ order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
 
 Below are the command aliases available.
 
-| Command        | Aliases             |
-| :------------- | :------------------ |
-| `help`         | `h` `?`             |
-| `authenticate` | `auth`              |
-| `account`      | `acc` `a`           |
-| `buy`          | `b`                 |
-| `sell`         | `s`                 |
-| `orders`       | `o`                 |
-| `close`        | `c`                 |
-| `cancel`       | `ca`                |
-| `positions`    | `pos` `ps` `po` `p` |
-| `quit`         | `exit` `e` `q`      |
+| Command     | Aliases             |
+| :---------- | :------------------ |
+| `help`      | `h` `?`             |
+| `config`    | `conf`              |
+| `account`   | `acc` `a`           |
+| `buy`       | `b`                 |
+| `sell`      | `s`                 |
+| `orders`    | `o`                 |
+| `close`     | `c`                 |
+| `cancel`    | `ca`                |
+| `positions` | `pos` `ps` `po` `p` |
+| `quit`      | `exit` `e` `q`      |
 
 ## To Do
 

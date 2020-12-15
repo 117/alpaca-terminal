@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import os from 'os'
 import fs from 'fs'
 import path from 'path'
+import dot from 'dot-prop'
 import pkg from '../package.json'
 import readline from 'readline'
 
@@ -11,37 +12,10 @@ import {
   OrderTimeInForce,
 } from '@master-chief/alpaca/types/entities'
 
+import { read as config, write } from './config.js'
 import { AlpacaClient, PlaceOrder } from '@master-chief/alpaca'
 import { default as Decimal } from 'decimal.js'
-
-const CONFIG_DIR = path.join(os.homedir(), '.alpaca-terminal'),
-  CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')
-
-class Config {
-  colors = true
-  credentials = {
-    key: '******',
-    secret: '************',
-  }
-}
-
-function getConfig(): Config {
-  try {
-    return JSON.parse(fs.readFileSync(CONFIG_PATH).toString())
-  } catch {
-    if (!fs.existsSync(CONFIG_DIR)) {
-      fs.mkdirSync(CONFIG_DIR)
-    }
-
-    let conf = new Config()
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '))
-    return conf
-  }
-}
-
-function color(chalk: chalk.Chalk, input: string): string {
-  return getConfig().colors ? chalk(input) : input
-}
+import { allowedNodeEnvironmentFlags } from 'process'
 
 new (class {
   private interface = readline.createInterface({
@@ -51,8 +25,8 @@ new (class {
 
   private client: AlpacaClient = new AlpacaClient({
     credentials: {
-      key: getConfig().credentials.key,
-      secret: getConfig().credentials.secret,
+      key: config().credentials.key,
+      secret: config().credentials.secret,
     },
     rate_limit: true,
   })
@@ -102,10 +76,11 @@ new (class {
   async help() {
     ;`help          [command]
 account       [field]
+config        [key] [value]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
-close         <symbol|all|*>
-cancel        <symbol|order_id|all|*>
+close         <symbol|*>
+cancel        <symbol|order_id|*>
 orders        [status]
 positions
 quit`
@@ -113,32 +88,64 @@ quit`
       .forEach((line) => console.log(line))
   }
 
-  async authenticate(...args: Array<string>) {
-    // make sure minimum arg length is met
-    if (args.length < 2) {
-      throw 'not enough args'
+  async config(...args: Array<string>) {
+    let key = _.isUndefined(dot.get(config(), args[0])) ? undefined : args[0],
+      value = dot.get(config(), args[0])
+
+    if (args.length == 1) {
+      // make sure field exists
+      if (!key) {
+        throw `key "${args[0]}" not found in config`
+      }
+
+      // @ts-ignore
+      console.log(value)
+    } else if (args.length > 1) {
+      // make sure field exists
+      if (!key) {
+        throw `key "${args[0]}" not found in config`
+      }
+
+      // @ts-ignore
+      let fieldType = typeof value
+
+      try {
+        args[1] = JSON.parse(args[1])
+      } catch {}
+
+      // make sure type is the same
+      if (typeof args[1] != fieldType) {
+        throw `wrong type, key "${args[0]}" is of type ${fieldType}`
+      }
+
+      // @ts-ignore
+      write(dot.set(config(), key, args[1]))
+      console.log(args[1])
+
+      // @ts-ignore
+      this.client['options']['credentials']['key'] = config().credentials.key
+      // @ts-ignore
+      this.client['options']['credentials'][
+        'secret'
+      ] = config().credentials.secret
+    } else {
+      // print entire config
+      for (let [key_a, value_a] of Object.entries(config())) {
+        // skip functions
+        if (_.isFunction(value_a)) {
+          continue
+        }
+
+        // print nested object as dot path
+        if (_.isObject(value_a)) {
+          for (let [key_b, value_b] of Object.entries(value_a))
+            console.log(`${key_a}.${key_b}`.padEnd(24), value_b)
+          continue
+        }
+
+        console.log(`${key_a}`.padEnd(24), value_a)
+      }
     }
-
-    let newClient = new AlpacaClient({
-      credentials: {
-        key: args[0],
-        secret: args[1],
-      },
-      rate_limit: true,
-    })
-
-    // we weren't able to authenticate with alpaca
-    if (!(await newClient.isAuthenticated())) {
-      throw 'unauthorized, check your config'
-    }
-
-    this.client = newClient
-
-    console.log(
-      `using account with number ${
-        (await this.client.getAccount()).account_number
-      }`,
-    )
   }
 
   async account(...args: Array<string>) {
@@ -219,8 +226,9 @@ quit`
     let params: PlaceOrder = {
       symbol: asset.symbol,
       qty: Math.floor(
-        args[2].includes('$')
-          ? new Decimal(amount)
+        config().parse_amount_as_shares
+          ? amount
+          : new Decimal(amount)
               .div(
                 (
                   await this.client.getLastTrade({
@@ -228,8 +236,7 @@ quit`
                   })
                 ).last.price,
               )
-              .toNumber()
-          : amount,
+              .toNumber(),
       ),
       side: side as OrderSide,
       type: args[4] ? 'limit' : 'market',
@@ -430,6 +437,8 @@ quit`
     'help': 'help',
     'h': 'help',
     '?': 'help',
+    'conf': 'config',
+    'config': 'config',
     'a': 'account',
     'acc': 'account',
     'account': 'account',
@@ -455,3 +464,7 @@ quit`
     'quit': 'quit',
   },
 }).loop()
+
+function color(chalk: chalk.Chalk, input: string): string {
+  return config().colors ? chalk(input) : input
+}

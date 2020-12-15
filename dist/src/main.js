@@ -7,39 +7,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
 const chalk_1 = __importDefault(require("chalk"));
-const os_1 = __importDefault(require("os"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+const dot_prop_1 = __importDefault(require("dot-prop"));
 const package_json_1 = __importDefault(require("../package.json"));
 const readline_1 = __importDefault(require("readline"));
+const config_js_1 = require("./config.js");
 const alpaca_1 = require("@master-chief/alpaca");
 const decimal_js_1 = __importDefault(require("decimal.js"));
-const CONFIG_DIR = path_1.default.join(os_1.default.homedir(), '.alpaca-terminal'), CONFIG_PATH = path_1.default.join(CONFIG_DIR, 'config.json');
-class Config {
-    constructor() {
-        this.colors = true;
-        this.credentials = {
-            key: '******',
-            secret: '************',
-        };
-    }
-}
-function getConfig() {
-    try {
-        return JSON.parse(fs_1.default.readFileSync(CONFIG_PATH).toString());
-    }
-    catch {
-        if (!fs_1.default.existsSync(CONFIG_DIR)) {
-            fs_1.default.mkdirSync(CONFIG_DIR);
-        }
-        let conf = new Config();
-        fs_1.default.writeFileSync(CONFIG_PATH, JSON.stringify(conf, null, '  '));
-        return conf;
-    }
-}
-function color(chalk, input) {
-    return getConfig().colors ? chalk(input) : input;
-}
 new (class {
     constructor(parameters) {
         this.parameters = parameters;
@@ -49,8 +22,8 @@ new (class {
         });
         this.client = new alpaca_1.AlpacaClient({
             credentials: {
-                key: getConfig().credentials.key,
-                secret: getConfig().credentials.secret,
+                key: config_js_1.read().credentials.key,
+                secret: config_js_1.read().credentials.secret,
             },
             rate_limit: true,
         });
@@ -89,34 +62,66 @@ new (class {
         ;
         `help          [command]
 account       [field]
+config        [key] [value]
 buy           <symbol> <amount> [tif] [limit_price]
 sell          <symbol> <amount> [tif] [limit_price]
-close         <symbol|all|*>
-cancel        <symbol|order_id|all|*>
+close         <symbol|*>
+cancel        <symbol|order_id|*>
 orders        [status]
 positions
 quit`
             .split('\n')
             .forEach((line) => console.log(line));
     }
-    async authenticate(...args) {
-        // make sure minimum arg length is met
-        if (args.length < 2) {
-            throw 'not enough args';
+    async config(...args) {
+        let key = lodash_1.default.isUndefined(dot_prop_1.default.get(config_js_1.read(), args[0])) ? undefined : args[0], value = dot_prop_1.default.get(config_js_1.read(), args[0]);
+        if (args.length == 1) {
+            // make sure field exists
+            if (!key) {
+                throw `key "${args[0]}" not found in config`;
+            }
+            // @ts-ignore
+            console.log(value);
         }
-        let newClient = new alpaca_1.AlpacaClient({
-            credentials: {
-                key: args[0],
-                secret: args[1],
-            },
-            rate_limit: true,
-        });
-        // we weren't able to authenticate with alpaca
-        if (!(await newClient.isAuthenticated())) {
-            throw 'unauthorized, check your config';
+        else if (args.length > 1) {
+            // make sure field exists
+            if (!key) {
+                throw `key "${args[0]}" not found in config`;
+            }
+            // @ts-ignore
+            let fieldType = typeof value;
+            try {
+                args[1] = JSON.parse(args[1]);
+            }
+            catch { }
+            // make sure type is the same
+            if (typeof args[1] != fieldType) {
+                throw `wrong type, key "${args[0]}" is of type ${fieldType}`;
+            }
+            // @ts-ignore
+            config_js_1.write(dot_prop_1.default.set(config_js_1.read(), key, args[1]));
+            console.log(args[1]);
+            // @ts-ignore
+            this.client['options']['credentials']['key'] = config_js_1.read().credentials.key;
+            // @ts-ignore
+            this.client['options']['credentials']['secret'] = config_js_1.read().credentials.secret;
         }
-        this.client = newClient;
-        console.log(`using account with number ${(await this.client.getAccount()).account_number}`);
+        else {
+            // print entire config
+            for (let [key_a, value_a] of Object.entries(config_js_1.read())) {
+                // skip functions
+                if (lodash_1.default.isFunction(value_a)) {
+                    continue;
+                }
+                // print nested object as dot path
+                if (lodash_1.default.isObject(value_a)) {
+                    for (let [key_b, value_b] of Object.entries(value_a))
+                        console.log(`${key_a}.${key_b}`.padEnd(24), value_b);
+                    continue;
+                }
+                console.log(`${key_a}`.padEnd(24), value_a);
+            }
+        }
     }
     async account(...args) {
         // make sure client has been setup
@@ -182,13 +187,13 @@ quit`
         }
         let params = {
             symbol: asset.symbol,
-            qty: Math.floor(args[2].includes('$')
-                ? new decimal_js_1.default(amount)
+            qty: Math.floor(config_js_1.read().parse_amount_as_shares
+                ? amount
+                : new decimal_js_1.default(amount)
                     .div((await this.client.getLastTrade({
                     symbol: asset.symbol,
                 })).last.price)
-                    .toNumber()
-                : amount),
+                    .toNumber()),
             side: side,
             type: args[4] ? 'limit' : 'market',
             time_in_force: args[3] ?? 'day',
@@ -319,6 +324,8 @@ quit`
         'help': 'help',
         'h': 'help',
         '?': 'help',
+        'conf': 'config',
+        'config': 'config',
         'a': 'account',
         'acc': 'account',
         'account': 'account',
@@ -344,3 +351,6 @@ quit`
         'quit': 'quit',
     },
 }).loop();
+function color(chalk, input) {
+    return config_js_1.read().colors ? chalk(input) : input;
+}
