@@ -14,7 +14,6 @@ class Config {
             key: '******',
             secret: '************',
         };
-        this.parse_amount_as_shares = true;
     }
 }
 const CONFIG_DIR = path_1.default.join(os_1.default.homedir(), '.alpaca-terminal'), CONFIG_PATH = path_1.default.join(CONFIG_DIR, 'config.json');

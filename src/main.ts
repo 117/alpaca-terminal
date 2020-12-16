@@ -1,8 +1,5 @@
 import _ from 'lodash'
 import chalk from 'chalk'
-import os from 'os'
-import fs from 'fs'
-import path from 'path'
 import dot from 'dot-prop'
 import pkg from '../package.json'
 import readline from 'readline'
@@ -15,7 +12,6 @@ import {
 import { read as config, write } from './config.js'
 import { AlpacaClient, PlaceOrder } from '@master-chief/alpaca'
 import { default as Decimal } from 'decimal.js'
-import { allowedNodeEnvironmentFlags } from 'process'
 
 new (class {
   private interface = readline.createInterface({
@@ -226,17 +222,14 @@ quit`
     let params: PlaceOrder = {
       symbol: asset.symbol,
       qty: Math.floor(
-        config().parse_amount_as_shares
-          ? amount
-          : new Decimal(amount)
+        args[2].includes('$')
+          ? new Decimal(amount)
               .div(
-                (
-                  await this.client.getLastTrade({
-                    symbol: asset.symbol,
-                  })
-                ).last.price,
+                (await this.client.getLastTrade({ symbol: asset.symbol })).last
+                  .price,
               )
-              .toNumber(),
+              .toNumber()
+          : amount,
       ),
       side: side as OrderSide,
       type: args[4] ? 'limit' : 'market',

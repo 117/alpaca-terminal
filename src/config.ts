@@ -8,7 +8,6 @@ class Config {
     key: '******',
     secret: '************',
   }
-  parse_amount_as_shares = true
 }
 
 const CONFIG_DIR = path.join(os.homedir(), '.alpaca-terminal'),

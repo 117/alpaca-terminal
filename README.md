@@ -71,7 +71,6 @@ To view all options type `config`.
 colors                   true
 credentials.key          ******
 credentials.secret       ************
-parse_amount_as_shares   true
 ```
 
 To view a specific option type `config <key>`.

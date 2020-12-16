@@ -187,13 +187,12 @@ quit`
         }
         let params = {
             symbol: asset.symbol,
-            qty: Math.floor(config_js_1.read().parse_amount_as_shares
-                ? amount
-                : new decimal_js_1.default(amount)
-                    .div((await this.client.getLastTrade({
-                    symbol: asset.symbol,
-                })).last.price)
-                    .toNumber()),
+            qty: Math.floor(args[2].includes('$')
+                ? new decimal_js_1.default(amount)
+                    .div((await this.client.getLastTrade({ symbol: asset.symbol })).last
+                    .price)
+                    .toNumber()
+                : amount),
             side: side,
             type: args[4] ? 'limit' : 'market',
             time_in_force: args[3] ?? 'day',
