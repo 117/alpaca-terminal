@@ -1,4 +1,4 @@
-# alpaca terminal
+# alpaca-terminal
 
 ![version](https://img.shields.io/github/package-json/v/117/alpaca-terminal?color=196DFF&style=for-the-badge)
 ![code](https://img.shields.io/github/languages/code-size/117/alpaca-terminal?color=F1A42E&style=for-the-badge&label=size)
