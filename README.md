@@ -1,9 +1,9 @@
 # alpaca-terminal
 
-![version](https://img.shields.io/github/package-json/v/117/alpaca-terminal?color=196DFF&style=for-the-badge)
-![code](https://img.shields.io/github/languages/code-size/117/alpaca-terminal?color=F1A42E&style=for-the-badge&label=size)
-![build](https://img.shields.io/github/workflow/status/117/alpaca-terminal/test?style=for-the-badge)
-![prettier](https://img.shields.io/static/v1?label=style&message=prettier&color=ff51bc&style=for-the-badge)
+![version](https://img.shields.io/github/package-json/v/117/alpaca-terminal?color=196DFF&style=flat-square)
+![code](https://img.shields.io/github/languages/code-size/117/alpaca-terminal?color=F1A42E&style=flat-square&label=size)
+![build](https://img.shields.io/github/workflow/status/117/alpaca-terminal/test?style=flat-square)
+![prettier](https://img.shields.io/static/v1?label=style&message=prettier&color=ff51bc&style=flat-square)
 
 a command line terminal for trading with the Alpaca API
 
@@ -46,7 +46,7 @@ $ npm i -g alpaca-terminal
 Open the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.6.0
+alpaca-terminal 1.6.3
 type "help" or "h" to view commands
 > help
 help          [command]
