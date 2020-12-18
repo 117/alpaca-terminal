@@ -101,10 +101,8 @@ quit`
             // @ts-ignore
             config_js_1.write(dot_prop_1.default.set(config_js_1.read(), key, args[1]));
             console.log(args[1]);
-            // @ts-ignore
-            this.client['options']['credentials']['key'] = config_js_1.read().credentials.key;
-            // @ts-ignore
-            this.client['options']['credentials']['secret'] = config_js_1.read().credentials.secret;
+            dot_prop_1.default.set(this.client, 'params.credentials.key', config_js_1.read().credentials.key);
+            dot_prop_1.default.set(this.client, 'params.credentials.secret', config_js_1.read().credentials.secret);
         }
         else {
             // print entire config

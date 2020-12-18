@@ -118,12 +118,12 @@ quit`
       write(dot.set(config(), key, args[1]))
       console.log(args[1])
 
-      // @ts-ignore
-      this.client['options']['credentials']['key'] = config().credentials.key
-      // @ts-ignore
-      this.client['options']['credentials'][
-        'secret'
-      ] = config().credentials.secret
+      dot.set(this.client, 'params.credentials.key', config().credentials.key)
+      dot.set(
+        this.client,
+        'params.credentials.secret',
+        config().credentials.secret,
+      )
     } else {
       // print entire config
       for (let [key_a, value_a] of Object.entries(config())) {
