@@ -1,6 +1,6 @@
 {
     "name": "alpaca-terminal",
-    "version": "1.6.3",
+    "version": "2.0.1",
     "description": "a command line terminal for trading with the Alpaca API",
     "bin": {
         "alpaca-terminal": "dist/src/main.js",
@@ -23,6 +23,7 @@
     "dependencies": {
         "@master-chief/alpaca": "^3.5.0",
         "chalk": "^4.1.0",
+        "clean-stack": "^3.0.1",
         "decimal.js": "^10.2.1",
         "dot-prop": "^6.0.1",
         "draftlog": "^1.0.12",

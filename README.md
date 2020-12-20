@@ -39,6 +39,7 @@ $ npm i -g alpaca-terminal
 - [Config](#config)
 - [Buy](#buy)
 - [Sell](#sell)
+- [Orders](#orders)
 - [Aliases](#aliases)
 
 ### Launching
@@ -46,17 +47,17 @@ $ npm i -g alpaca-terminal
 Open the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.6.3
-type "help" or "h" to view commands
+alpaca-terminal 2.0.0
+type help or ? to view commands
 > help
-help          [command]
-config        [key] [value]
-account       [field]
-buy           <symbol> <amount> [tif] [limit_price]
-sell          <symbol> <amount> [tif] [limit_price]
-close         <symbol|all|*>
-cancel        <symbol|order_id|all|*>
-orders        [status]
+help      [command]
+config    [key] [value]
+account   [field]
+buy       <symbol> <qty> [tif] [limit_price]
+sell      <symbol> <qty> [tif] [limit_price]
+cancel    <symbol|order_id|*>
+close     <symbol|*>
+orders    [status]
 positions
 quit
 >
@@ -68,23 +69,22 @@ To view all options type `config`.
 
 ```terminal
 > config
-colors                   true
-credentials.key          ******
-credentials.secret       ************
+credentials.key    xxxxxxxxxxxx
+credentials.secret xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 To view a specific option type `config <key>`.
 
 ```terminal
-> config colors
-true
+> config credentials.key
+credentials.key xxxxxxxxxxxx
 ```
 
 To set an option type `config <key> <value>`.
 
 ```terminal
 > config credentials.key mykey
-mykey
+credentials.key mykey
 ```
 
 ### Buy
@@ -93,7 +93,7 @@ To buy a stock simply provide the `symbol` and `amount`.
 
 ```terminal
 > buy SPY 1
-order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
+placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
 ```
 
 ### Sell
@@ -102,25 +102,35 @@ To sell a stock simply provide the `symbol` and `amount`.
 
 ```terminal
 > sell TSLA 1
-order placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
+placed with ID 1184e1b7-2aa9-471e-8ec0-0981d1c35e4e
+```
+
+### Orders
+
+To view your recent orders type `orders`, optionally you can type
+`orders [status]` to see specific order types.
+
+```terminal
+symbol side qty price status   id
+TSLA   buy  1   -     accepted a92af801-2c27-4f07-b55f-4861c29333d2
 ```
 
 ### Aliases
 
 Below are the command aliases available.
 
-| Command     | Aliases             |
-| :---------- | :------------------ |
-| `help`      | `h` `?`             |
-| `config`    | `conf`              |
-| `account`   | `acc` `a`           |
-| `buy`       | `b`                 |
-| `sell`      | `s`                 |
-| `orders`    | `o`                 |
-| `close`     | `c`                 |
-| `cancel`    | `ca`                |
-| `positions` | `pos` `ps` `po` `p` |
-| `quit`      | `exit` `e` `q`      |
+| Command     | Aliases      |
+| :---------- | :----------- |
+| `help`      | `h` `?`      |
+| `config`    | `conf` `cfg` |
+| `account`   | `acc` `a`    |
+| `buy`       | `b`          |
+| `sell`      | `s`          |
+| `orders`    | `o`          |
+| `close`     | `c`          |
+| `cancel`    | `ca`         |
+| `positions` | `pos` `p`    |
+| `quit`      | `q`          |
 
 ## To Do
 
