@@ -53,7 +53,7 @@ export default new Command(
       }
 
       // @ts-ignore
-      console.log(value)
+      console.log(args[0], value)
       return
     }
 
@@ -77,7 +77,7 @@ export default new Command(
 
       writeConfig(dot.set(getConfig(), key, args[1]))
 
-      console.log(args[1])
+      console.log(args[0], args[1])
 
       dot.set(
         getClient(),

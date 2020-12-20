@@ -49,7 +49,7 @@ exports.default = new command_js_1.Command('config', '[key] [value]', ['conf', '
             throw new Error(`key "${args[0]}" not found in config`);
         }
         // @ts-ignore
-        console.log(value);
+        console.log(args[0], value);
         return;
     }
     if (args.length > 1) {
@@ -68,7 +68,7 @@ exports.default = new command_js_1.Command('config', '[key] [value]', ['conf', '
             throw new Error(`wrong type, key "${args[0]}" is of type ${fieldType}`);
         }
         writeConfig(dot_prop_1.default.set(getConfig(), key, args[1]));
-        console.log(args[1]);
+        console.log(args[0], args[1]);
         dot_prop_1.default.set(main_js_1.getClient(), 'params.credentials.key', getConfig().credentials.key);
         dot_prop_1.default.set(main_js_1.getClient(), 'params.credentials.secret', getConfig().credentials.secret);
         return;
