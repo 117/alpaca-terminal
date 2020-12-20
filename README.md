@@ -46,17 +46,17 @@ $ npm i -g alpaca-terminal
 Open the terminal with the `alpaca` or `alpaca-terminal` command.
 
 ```terminal
-alpaca-terminal 1.6.3
-type "help" or "h" to view commands
+alpaca-terminal 2.0.0
+type help or ? to view commands
 > help
-help          [command]
-config        [key] [value]
-account       [field]
-buy           <symbol> <amount> [tif] [limit_price]
-sell          <symbol> <amount> [tif] [limit_price]
-close         <symbol|all|*>
-cancel        <symbol|order_id|all|*>
-orders        [status]
+help      [command]
+config    [key] [value]
+account   [field]
+buy       <symbol> <qty> [tif] [limit_price]
+sell      <symbol> <qty> [tif] [limit_price]
+cancel    <symbol|order_id|*>
+close     <symbol|*>
+orders    [status]
 positions
 quit
 >
