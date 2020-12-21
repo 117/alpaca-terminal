@@ -16,7 +16,7 @@ exports.default = new command_js_1.Command('positions', '', ['pos', 'p'], async 
             console.log('none');
             return;
         }
-        pretty_table_js_1.default(positions.map((position) => ({
+        console.log(pretty_table_js_1.default(positions.map((position) => ({
             symbol: position.symbol,
             price: `$${position.current_price.toLocaleString()}`,
             qty: position.qty.toLocaleString(),
@@ -24,7 +24,7 @@ exports.default = new command_js_1.Command('positions', '', ['pos', 'p'], async 
             pnl: position.unrealized_pl > 0
                 ? `+$${position.unrealized_pl.toLocaleString()}`
                 : `-$${Math.abs(position.unrealized_pl).toLocaleString()}`,
-        })));
+        }))));
     })
         .catch((error) => {
         throw new Error(error.message);
