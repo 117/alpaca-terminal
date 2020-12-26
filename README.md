@@ -138,4 +138,4 @@ More is coming! This project is early in development.
 
 ## Contributing
 
-Pull requests are encouraged. 🙂
+Feel free to contribute and PR to your 💖's content.
